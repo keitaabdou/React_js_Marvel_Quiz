@@ -79,7 +79,11 @@ class Quiz extends Component {
 
     nextQuestion = () => {
         if(this.state.idQuestion === this.state.maxQuestions -1){
-            this.gameOver();
+            //this.gameOver();
+
+            this.setState({
+                quizEnd: true
+            })
         }else{
             this.setState(prevState => ({
                 idQuestion: prevState.idQuestion + 1
@@ -134,6 +138,13 @@ class Quiz extends Component {
            })
        }
 
+       if(this.state.quizEnd !== prevState.quizEnd){
+
+            const gradepercent = this.getPercentang(this.state.maxQuestions, this.state.score);
+            this.gameOver(gradepercent);
+
+       }
+
        if(this.props.userData.pseudo !== prevProps.userData.pseudo){
 
            this.showToastMsg(this.props.userData.pseudo)
@@ -152,23 +163,20 @@ class Quiz extends Component {
     
     getPercentang = (maxQuest, ourScore) => (ourScore / maxQuest) * 100;
     
-    gameOver = () => {
-
-      const gradepercent = this.getPercentang(this.state.maxQuestions, this.state.score);
+    gameOver = percent => {
 
 
-      if(gradepercent >= 50){
+
+      if(percent >= 50){
           this.setState({
               quizLevel: this.state.quizLevel + 1,
-              percent: gradepercent,
-              quizEnd: true
+              percent
           })
 
       }else{
 
         this.setState({
-            percent: gradepercent,
-            quizEnd: true
+            percent
         })
 
       }
@@ -212,7 +220,11 @@ class Quiz extends Component {
        :
        (
             <Fragment>
-                <Levels />
+                <Levels 
+
+                    levelNames={this.state.levelNames}
+                    quizLevel = {this.state.quizLevel}
+                />
                 <ProgressBar  
                     idQuestion={this.state.idQuestion}
                     maxQuestions={this.state.maxQuestions}
